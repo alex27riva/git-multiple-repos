@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ "$#" -lt 2 ]; then
-  echo "Bad number of arguments"
-  echo "Usage"
-  echo "./git_push_repo <repo_directory> <commit_message> [commit_description]"
-  echo "e.g."
-  echo \
-    "./git_push_repo ~/github/git_repo \"commit message\" \"commit description\""
+  echo -e "Bad number of arguments\n"
+  echo "Usage:"
+  echo -e "\tgit_push_repo <repo_directory> <commit_message> [commit_description]"
+  echo "Example:"
+  echo -e \
+    "\tgit_push_repo ~/github/git_repo \"commit message\" \"commit description\""
   exit 1
 fi
 
@@ -31,4 +31,3 @@ COMMIT_MESSAGE=$2
 DESCRIPTION=$3
 git -C "$REPO_DIR" commit -m "$COMMIT_MESSAGE" -m "$DESCRIPTION"
 git -C "$REPO_DIR" push
-

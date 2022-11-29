@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+if [ "$#" -ne 1 ]; then
+  echo -e "Bad arguments \n"
+  echo "Usage:"
+  echo -e "\tgit_clone_all <username> <root_git_dir>"
+  echo "Example:"
+  echo -e "\tgit_clone_all alex27riva ~/GitHub"
+  exit 1
+fi
+
+get_repo_list() {
+    username=$1
+    repos_api_url="https://api.github.com/users/${username}/repos"
+    repo_list=$(curl --silent $repos_api_url | jq '.[]')
+    git_repo_urls=$(jq '.git_url' <<< $repo_list)
+    git_ssh_urls=$(jq '.ssh_url' <<< $repo_list)
+    
+    echo $git_ssh_urls
+
+}
+
+main() {
+    local github_username=$1
+    local git_dest_dir='/tmp/git_test'
+
+    clone_urls=$(get_repo_list $github_username)
+    # Convert to array
+    read -a clone_urls <<< $clone_urls
+    # Go to destination folder
+    cd $git_dest_dir
+
+    for repo in "${clone_urls[@]}"; do
+        # Remove quotes
+        repo=$(sed -e 's/^"//' -e 's/"$//' <<<"$repo" )
+        git clone $repo &> /dev/null
+        echo "Cloned $repo"
+    done
+
+    cd - &> /dev/null
+
+}
+
+main $@
